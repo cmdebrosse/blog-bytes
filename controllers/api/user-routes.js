@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const session = require('express-session');
 const { User, Post, Comment } = require('../../models');
 
 // get all users
@@ -75,13 +76,6 @@ router.post('/login', (req, res) => {
       return;
     }
 
-    const validPassword = dbUserData.checkPassword(req.body.password);
-
-    if (!validPassword) {
-      res.status(400).json({ message: 'Incorrect password!' });
-      return;
-    }
-
     req.session.save(() => {
       // declare session variables
       req.session.user_id = dbUserData.id;
@@ -89,6 +83,13 @@ router.post('/login', (req, res) => {
       req.session.loggedIn = true;
 
       res.json({ user: dbUserData, message: 'You are now logged in!' });
+
+      const validPassword = dbUserData.checkPassword(req.body.password);
+
+      if (!validPassword) {
+        res.status(400).json({ message: 'Incorrect password!' });
+        return;
+      }
     });
   });
 });
