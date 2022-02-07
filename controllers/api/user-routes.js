@@ -93,6 +93,17 @@ router.post('/login', (req, res) => {
   });
 });
 
+router.post('/logout', (req, res) => {
+  if (req.session.loggedIn) {
+    req.session.destroy(() => {
+      res.status(204).end();
+      return;
+    });
+  } else {
+    res.status(404).end();
+  }
+});
+
 router.put('/:id', (req, res) => {
   // pass in req.body instead to only update what's passed through
   User.update(req.body, {
